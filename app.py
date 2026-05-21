@@ -5,10 +5,11 @@ app = Flask(__name__)
 
 # Connect MySQL
 db = mysql.connector.connect(
-    host="localhost",
+    host="kodama.proxy.rlwy.net",
     user="root",
-    password="root123",
-    database="login_db"
+    password="OjZQwVuFZqdVzbtUVIcLzUZRfRFJgfyE",
+    database="railway",
+    port=34525
 )
 
 cursor = db.cursor()
