@@ -12,8 +12,6 @@ db = mysql.connector.connect(
     port=34525
 )
 
-cursor = db.cursor()
-
 @app.route("/", methods=["GET", "POST"])
 def login():
 
@@ -23,6 +21,8 @@ def login():
 
         username = request.form["username"]
         password = request.form["password"]
+
+        cursor = db.cursor()
 
         query = """
         SELECT * FROM users
@@ -41,6 +41,46 @@ def login():
             message = "Invalid Username or Password"
 
     return render_template("login.html", message=message)
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+
+    message = ""
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+        password = request.form["password"]
+
+        cursor = db.cursor()
+
+        # Check if username already exists
+        check_query = "SELECT * FROM users WHERE username = %s"
+
+        cursor.execute(check_query, (username,))
+
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+
+            message = "Username already exists"
+
+        else:
+
+            query = """
+            INSERT INTO users (username, password)
+            VALUES (%s, %s)
+            """
+
+            values = (username, password)
+
+            cursor.execute(query, values)
+
+            db.commit()
+
+            message = "Registration Successful"
+
+    return render_template("register.html", message=message)
 
 if __name__ == "__main__":
     app.run(debug=True)
