@@ -1,10 +1,13 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, session
 import mysql.connector
-import os 
+import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 app = Flask(__name__)
+
+app.secret_key = "mysecretkey"
 
 # Connect MySQL
 db = mysql.connector.connect(
@@ -15,6 +18,7 @@ db = mysql.connector.connect(
     port=int(os.environ.get("DB_PORT"))
 )
 
+# LOGIN PAGE
 @app.route("/", methods=["GET", "POST"])
 def login():
 
@@ -39,12 +43,19 @@ def login():
         user = cursor.fetchone()
 
         if user:
-            message = "Login Successful"
+
+            # SESSION START
+            session["username"] = username
+
+            return redirect("/dashboard")
+
         else:
             message = "Invalid Username or Password"
 
     return render_template("login.html", message=message)
 
+
+# REGISTER PAGE
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
@@ -57,7 +68,7 @@ def register():
 
         cursor = db.cursor()
 
-        # Check if username already exists
+        # Check existing username
         check_query = "SELECT * FROM users WHERE username = %s"
 
         cursor.execute(check_query, (username,))
@@ -84,6 +95,34 @@ def register():
             message = "Registration Successful"
 
     return render_template("register.html", message=message)
+
+
+# DASHBOARD PAGE
+@app.route("/dashboard")
+def dashboard():
+
+    # Check if user logged in
+    if "username" in session:
+
+        username = session["username"]
+
+        return render_template(
+            "dashboard.html",
+            username=username
+        )
+
+    else:
+        return redirect("/")
+
+
+# LOGOUT
+@app.route("/logout")
+def logout():
+
+    session.pop("username", None)
+
+    return redirect("/")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
