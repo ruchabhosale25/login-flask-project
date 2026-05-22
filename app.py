@@ -1,15 +1,18 @@
 from flask import Flask, render_template, request
 import mysql.connector
+import os 
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 
 # Connect MySQL
 db = mysql.connector.connect(
-    host="kodama.proxy.rlwy.net",
-    user="root",
-    password="OjZQwVuFZqdVzbtUVIcLzUZRfRFJgfyE",
-    database="railway",
-    port=34525
+    host=os.environ.get("DB_HOST"),
+    user=os.environ.get("DB_USER"),
+    password=os.environ.get("DB_PASSWORD"),
+    database=os.environ.get("DB_NAME"),
+    port=int(os.environ.get("DB_PORT"))
 )
 
 @app.route("/", methods=["GET", "POST"])
