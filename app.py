@@ -15,7 +15,7 @@ db = mysql.connector.connect(
     user=os.environ.get("DB_USER"),
     password=os.environ.get("DB_PASSWORD"),
     database=os.environ.get("DB_NAME"),
-    port=os.environ.get("DB_PORT")
+    port=int(os.environ.get("DB_PORT"))
 )
 
 # LOGIN PAGE
