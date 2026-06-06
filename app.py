@@ -11,18 +11,12 @@ app.secret_key = "mysecretkey"
 
 # Connect MySQL
 db = mysql.connector.connect(
-    host=os.environ.get("DB_HOST"),
-    user=os.environ.get("DB_USER"),
-    password=os.environ.get("DB_PASSWORD"),
-    database=os.environ.get("DB_NAME"),
-    port=int(os.environ.get("DB_PORT"))
+    host=os.getenv("DB_HOST"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    database=os.getenv("DB_NAME"),
+    port=int(os.getenv("DB_PORT", "3306"))
 )
-
-print("DB_HOST =", os.environ.get("DB_HOST"))
-print("DB_USER =", os.environ.get("DB_USER"))
-print("DB_NAME =", os.environ.get("DB_NAME"))
-print("DB_PORT =", os.environ.get("DB_PORT"))
-
 
 # LOGIN PAGE
 @app.route("/", methods=["GET", "POST"])
